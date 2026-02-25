@@ -3,10 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/dsorm/yeelight2mqtt/api"
-	"github.com/dsorm/yeelight2mqtt/console"
-	mqtt "github.com/eclipse/paho.mqtt.golang"
-	"gopkg.in/yaml.v2"
 	"log"
 	"math"
 	"os"
@@ -14,6 +10,11 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/dsorm/yeelight2mqtt/api"
+	"github.com/dsorm/yeelight2mqtt/console"
+	mqtt "github.com/eclipse/paho.mqtt.golang"
+	"gopkg.in/yaml.v2"
 )
 
 var (
@@ -210,7 +211,6 @@ func (as *AppState) publishProp(light *api.Light) {
 	// for topic, value := range data {
 	//	as.mqttClient.Publish(baseTopic+topic, 0, false, value)
 	// }
-
 }
 
 func (as *AppState) publishSingleProp(light *api.Light, topic string, payload interface{}) {
@@ -353,7 +353,6 @@ func (as *AppState) subProp(l *api.Light) {
 
 			// update state
 			as.publishSingleProp(l, "main/sat", fmt.Sprintf("%v", l.GetState().Sat))
-
 		},
 
 		"main/color_mode/set": func(client mqtt.Client, message mqtt.Message) {
@@ -686,12 +685,14 @@ func CreateConfig(filename string) error {
 	defaultConfig := AppState{
 		Lights: []api.Light{
 			{
-				Host: "192.168.50.2",
-				Name: "light-1-example",
+				Host:        "192.168.50.2",
+				Name:        "light-1-example",
+				OldFirmware: false,
 			},
 			{
-				Host: "192.168.50.3",
-				Name: "light-2-example",
+				Host:        "192.168.50.3",
+				Name:        "light-2-example",
+				OldFirmware: false,
 			},
 		},
 		MQTTSettings: MQTTSettings{
@@ -723,7 +724,6 @@ func (as *AppState) stateDaemon() {
 	console.Logf("Initial poll starting...\n")
 
 	go func() {
-
 		for {
 			select {
 			case <-ticker.C:

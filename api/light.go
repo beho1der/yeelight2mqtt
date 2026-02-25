@@ -6,8 +6,9 @@ import (
 )
 
 type Light struct {
-	Host string
-	Name string
+	Host        string
+	Name        string
+	OldFirmware bool
 
 	stateMutex  sync.Mutex
 	latestState LightProperties

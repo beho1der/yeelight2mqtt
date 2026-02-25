@@ -4,17 +4,17 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/dsorm/yeelight2mqtt/console"
 	"log"
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/dsorm/yeelight2mqtt/console"
 )
 
 func (l *Light) sendVerify(funcName string, command string, params ...interface{}) error {
 	formattedCommand := fmt.Sprintf(command, params...)
 	response, err := l.SendCommand(formattedCommand, 10)
-
 	if err != nil {
 		return err
 	}
@@ -27,9 +27,15 @@ func (l *Light) sendVerify(funcName string, command string, params ...interface{
 }
 
 func (l *Light) GetProp() error {
-	command := "{\"id\":0,\"method\":\"get_prop\",\"params\":[\"power\", \"bright\", \"ct\", \"rgb\", \"hue\", \"sat\", \"color_mode\", \"flowing\", \"delayoff\", \"flow_params\", \"music_on\", \"name\", \"bg_power\", \"bg_flowing\", \"bg_flow_params\", \"bg_ct\", \"bg_lmode\", \"bg_bright\", \"bg_rgb\", \"bg_hue\", \"bg_sat\", \"nl_br\", \"active_mode\"]}"
-	resp, err := l.SendCommand(command, 3)
+	var Delayoff uint8
+	var Music_On bool
 
+	command := `{"id":0,"method":"get_prop","params":["power","bright","ct","rgb","hue","sat","color_mode","flowing","active_mode","flow_params","nl_br","name","bg_power","bg_flowing","bg_flow_params","bg_ct","bg_lmode","bg_bright","bg_rgb","bg_hue","bg_sat","music_on","delayoff"]}`
+	// для старых прошивок ограничение на длинну запроса
+	if l.OldFirmware {
+		command = `{"id":0,"method":"get_prop","params":["power","bright","ct","rgb","hue","sat","color_mode","flowing","active_mode","flow_params","nl_br","name","bg_power","bg_flowing","bg_flow_params","bg_ct","bg_lmode","bg_bright","bg_rgb","bg_hue","bg_sat"]}`
+	}
+	resp, err := l.SendCommand(command, 3)
 	if err != nil {
 		return err
 	}
@@ -54,7 +60,7 @@ func (l *Light) GetProp() error {
 		return fmt.Errorf("GetProp() failed: %v", m["result"])
 	}
 	result := m["result"].([]interface{})
-	if len(result) < 21 {
+	if len(result) < 21 && l.OldFirmware {
 		return fmt.Errorf("GetProp() failed: result too small (expected at least 21, got %v), result is %v\n", len(result), result)
 	}
 
@@ -95,6 +101,10 @@ func (l *Light) GetProp() error {
 		}
 		return uint32(num)
 	}
+	if !l.OldFirmware {
+		Music_On = result[21].(string) == "1"
+		Delayoff = atouint8(result[22])
+	}
 	lp := LightProperties{
 		On:             result[0].(string) == "on",
 		Bright:         atouint8(result[1]),
@@ -104,9 +114,9 @@ func (l *Light) GetProp() error {
 		Sat:            atouint8(result[5]),
 		Color_Mode:     ColorMode(atouint8(result[6])),
 		Flowing:        result[7].(string) == "1",
-		Delayoff:       atouint8(result[8]),
+		Moonlight_On:   result[8].(string) == "1",
 		Flow_Params:    result[9].(string),
-		Music_On:       result[10].(string) == "1",
+		Nl_Br:          atouint8(result[10]),
 		Name:           result[11].(string),
 		Bg_On:          result[12].(string) == "on",
 		Bg_Flowing:     result[13].(string) == "1",
@@ -117,8 +127,8 @@ func (l *Light) GetProp() error {
 		Bg_RGB:         atouint32(result[18]),
 		Bg_Hue:         atouint16(result[19]),
 		Bg_Sat:         atouint8(result[20]),
-		Nl_Br:          atouint8(result[21]),
-		Moonlight_On:   result[22].(string) == "1",
+		Music_On:       Music_On,
+		Delayoff:       Delayoff,
 	}
 
 	l.latestState = lp
