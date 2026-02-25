@@ -11,9 +11,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dsorm/yeelight2mqtt/api"
-	"github.com/dsorm/yeelight2mqtt/console"
-	mqtt "github.com/eclipse/paho.mqtt.golang"
+	"yeelight2mqtt/api"
+	"yeelight2mqtt/console"
+
+	"yeelight2mqtt/mqtt"
+
 	"gopkg.in/yaml.v2"
 )
 

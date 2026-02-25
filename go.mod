@@ -1,13 +1,11 @@
-module github.com/dsorm/yeelight2mqtt
+module yeelight2mqtt
 
-go 1.18
+go 1.25.7
 
 require (
-	github.com/eclipse/paho.mqtt.golang v1.3.5
+	github.com/dsorm/yeelight2mqtt v0.2.0
+	github.com/eclipse/paho.mqtt.golang v1.5.1
+	github.com/gorilla/websocket v1.5.3
+	golang.org/x/net v0.50.0
 	gopkg.in/yaml.v2 v2.4.0
-)
-
-require (
-	github.com/gorilla/websocket v1.4.2 // indirect
-	golang.org/x/net v0.0.0-20200425230154-ff2c4b7c35a0 // indirect
 )
