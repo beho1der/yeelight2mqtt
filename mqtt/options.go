@@ -87,18 +87,18 @@ type ClientOptions struct {
 	MessageChannelDepth     uint
 	ResumeSubs              bool
 	HTTPHeaders             http.Header
-	WebsocketOptions        *WebsocketOptions
 }
 
 // NewClientOptions will create a new ClientClientOptions type with some
 // default values.
-//   Port: 1883
-//   CleanSession: True
-//   Order: True (note: it is recommended that this be set to FALSE unless order is important)
-//   KeepAlive: 30 (seconds)
-//   ConnectTimeout: 30 (seconds)
-//   MaxReconnectInterval 10 (minutes)
-//   AutoReconnect: True
+//
+//	Port: 1883
+//	CleanSession: True
+//	Order: True (note: it is recommended that this be set to FALSE unless order is important)
+//	KeepAlive: 30 (seconds)
+//	ConnectTimeout: 30 (seconds)
+//	MaxReconnectInterval 10 (minutes)
+//	AutoReconnect: True
 func NewClientOptions() *ClientOptions {
 	o := &ClientOptions{
 		Servers:                 nil,
@@ -128,7 +128,6 @@ func NewClientOptions() *ClientOptions {
 		WriteTimeout:            0, // 0 represents timeout disabled
 		ResumeSubs:              false,
 		HTTPHeaders:             make(map[string][]string),
-		WebsocketOptions:        &WebsocketOptions{},
 	}
 	return o
 }
@@ -393,11 +392,5 @@ func (o *ClientOptions) SetMessageChannelDepth(s uint) *ClientOptions {
 // opening handshake.
 func (o *ClientOptions) SetHTTPHeaders(h http.Header) *ClientOptions {
 	o.HTTPHeaders = h
-	return o
-}
-
-// SetWebsocketOptions sets the additional websocket options used in a WebSocket connection
-func (o *ClientOptions) SetWebsocketOptions(w *WebsocketOptions) *ClientOptions {
-	o.WebsocketOptions = w
 	return o
 }

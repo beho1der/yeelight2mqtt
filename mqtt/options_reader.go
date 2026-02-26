@@ -159,9 +159,3 @@ func (r *ClientOptionsReader) HTTPHeaders() http.Header {
 	h := r.options.HTTPHeaders
 	return h
 }
-
-// WebsocketOptions returns the currently configured WebSocket options
-func (r *ClientOptionsReader) WebsocketOptions() *WebsocketOptions {
-	s := r.options.WebsocketOptions
-	return s
-}
