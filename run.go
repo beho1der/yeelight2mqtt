@@ -757,7 +757,7 @@ func (as *AppState) mqttInit() error {
 	opts := mqtt.NewClientOptions()
 
 	// check for supported protocols, and if none is specified, use tcp://
-	supportedProtocols := []string{"tcp://", "ssl://", "ws://", "wss://"}
+	supportedProtocols := []string{"tcp://", "ssl://"}
 	supportedProtocol := false
 	for _, protocol := range supportedProtocols {
 		if strings.Contains(as.MQTTSettings.Host, protocol) {
@@ -793,7 +793,7 @@ func main() {
 	signal.Notify(c, os.Interrupt)
 
 	if Version == "" {
-		Version = "v0.0.0"
+		Version = "v0.2.1"
 	}
 	if BuildTime == "" {
 		BuildTime = "NAN"

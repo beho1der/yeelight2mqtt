@@ -1,0 +1,7 @@
+Package: yeelight2mqtt
+Version: 0.2.1
+Architecture: arm_cortex-a7_neon-vfpv4
+Maintainer: captain <captain.perreiro@gmail.com>
+Section: misc
+Priority: standard
+Description: service add yeelight device to mqtt
