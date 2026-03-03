@@ -1,6 +1,0 @@
-#!/bin/sh
-
-/etc/init.d/yeelight2mqtt enable
-/etc/init.d/yeelight2mqtt start
-
-exit 0
