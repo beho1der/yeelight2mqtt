@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"yeelight2mqtt/api"
+	"yeelight2mqtt/args"
 	"yeelight2mqtt/console"
 
 	"yeelight2mqtt/mqtt"
@@ -20,9 +21,9 @@ import (
 )
 
 var (
-	Version   string
-	BuildTime string
-	GitCommit string
+	Version     string
+	AppName     string = "yeelight2mqtt"
+	ConfigPatch string = "/etc/" + AppName + "/config.yaml"
 )
 
 type MQTTSettings struct {
@@ -789,50 +790,45 @@ func (as *AppState) mqttInit() error {
 }
 
 func main() {
+	Version = "v0.2.1"
+
+	args, err := args.ProcessArgs()
+	if err != nil {
+		log.Fatalf("problem command args %v", err)
+	}
+	if args.ConfigsDirPath != nil {
+		ConfigPatch = *args.ConfigsDirPath
+	}
+	if args.CreateConfig {
+		err = CreateConfig(ConfigPatch)
+		if err != nil {
+			log.Fatalf("%v", err)
+		}
+		console.Logf("create config %v\n", ConfigPatch)
+		os.Exit(0)
+	}
+
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt)
 
-	if Version == "" {
-		Version = "v0.2.1"
-	}
-	if BuildTime == "" {
-		BuildTime = "NAN"
-	}
-	if GitCommit == "" {
-		GitCommit = "NAN"
-	}
-
-	// go func() {
-	// 	select {
-	// 	case _ = <-c:
-	// 		sendsTotal := float32(unsuccessfulSends) + float32(successfulSends)
-	//
-	// 		// calculate the value of failure rate in percent
-	// 		failureRate := float32(unsuccessfulSends) / sendsTotal * 100
-	//
-	// 		consoleLogf("Unsuccessful sends: %v, successful sends: %v, failure rate %.2f%%", unsuccessfulSends, successfulSends, failureRate)
-	// 		os.Exit(1)
-	// 	}
-	// }()
-
-	console.Logf("yeelight2mqtt %v (git commit %v, built %v) starting...\n", Version, GitCommit, BuildTime)
+	console.Logf("%v %v starting...\n", AppName, Version)
 
 	as := AppState{}
 
-	err := as.LoadFromYAML("config.yaml")
+	err = as.LoadFromYAML(ConfigPatch)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			console.Logln("Config.yaml doesn't exist, creating a sample config.yaml...")
-			err = CreateConfig("config.yaml")
+			console.Logf("config.yaml doesn't exist, creating a sample %v", ConfigPatch)
+			err = CreateConfig(ConfigPatch)
 			if err != nil {
 				log.Fatalf("%v", err)
 			}
-			console.Logln("Change the values in config.yaml as needed and start yeelight2mqtt again.")
+			console.Logf("Change the values in %v as needed and start %v again.", ConfigPatch, AppName)
 
 			return
 		}
 
-		log.Fatalf("An error has occured while trying to load config.yaml: %v", err)
+		log.Fatalf("An error has occured while trying to load %v: %v", ConfigPatch, err)
 	}
 
 	err = as.mqttInit()

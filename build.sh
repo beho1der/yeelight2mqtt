@@ -19,12 +19,6 @@ mkdir -p ${PKG_DIR}/data/etc/${PKG_NAME}
 mkdir -p ${PKG_DIR}/data/etc/init.d
 mkdir -p ${PKG_DIR}/data/usr/bin
 
-# Создание исполняемого файла с tinygo и upx архитектура arm_cortex-a7
-PKG_ARCH="arm_cortex-a7_neon-vfpv4"
-env GOOS=linux GOARCH=arm GOARM=7 tinygo build -no-debug -o ${PKG_DIR}/data/usr/bin/${PKG_NAME}
-upx --best --lzma ${PKG_DIR}/data/usr/bin/${PKG_NAME}
-chmod +x ${PKG_DIR}/data/usr/bin/${PKG_NAME}
-
 # debian-binary
 cat <<EOF > ${BUILD_DIR}/debian-binary
 2.0
@@ -64,26 +58,8 @@ cat <<EOF > ${PKG_DIR}/control/conffiles
 EOF
 
 # data
-cat <<EOF > ${PKG_DIR}/data/etc/${PKG_NAME}/config.yaml
-lights:
-- host: 192.168.50.2
-  name: light-1-example
-  oldfirmware: false
-- host: 192.168.50.3
-  name: light-2-example
-  oldfirmware: false
-lightpollingrate:
-  seconds: 10
-mqttsettings:
-  host: localhost
-  port: 1883
-  tls: false
-  user: ""
-  password: ""
-  basetopic: y2m
-  qos: 2
-debug: false
-EOF
+go build -ldflags="-s -w" -trimpath
+./yeelight2mqtt -create-config ${PKG_DIR}/data/etc/${PKG_NAME}/config.yaml
 
 cat <<EOF > ${PKG_DIR}/data/etc/init.d/${PKG_NAME}
 !/bin/sh /etc/rc.common
@@ -111,8 +87,13 @@ reload_service() {
     procd_send_signal "\$PROG"
 }
 EOF
+# Создание исполняемого файла с tinygo и upx архитектура arm_cortex-a7
+PKG_ARCH="arm_cortex-a7_neon-vfpv4"
+env GOOS=linux GOARCH=arm GOARM=7 tinygo build -no-debug -o ${PKG_DIR}/data/usr/bin/${PKG_NAME}
+upx --best --lzma ${PKG_DIR}/data/usr/bin/${PKG_NAME}
+chmod +x ${PKG_DIR}/data/usr/bin/${PKG_NAME}
 
-# 4. Сборка пакета
+# Сборка пакета
 tar -czvf ${BUILD_DIR}/control.tar.gz  ${PKG_DIR}/control
 tar -czvf ${BUILD_DIR}/data.tar.gz  ${PKG_DIR}/data
 
