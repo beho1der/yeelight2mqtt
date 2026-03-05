@@ -24,7 +24,7 @@
 
 **Управление через mqtt:**
 
-*Основное управление*
+### Основное управление
 
 | Топик | Тип данных | Диапазон / Формат | Settable? | Описание |
 | :--- | :--- | :--- | :---: | :--- |
@@ -43,20 +43,20 @@
 | `main/nl_br` | integer | 1–100 | да* | Яркость ночного режима (moonlight) |
 | `main/moonlight_on` | boolean | true / false | да | Включён ли moonlight режим |
 
-*Фоновая подсветка*
+### Фоновая подсветка (Background Control)
 
-  Топик            Тип данных   Диапазон / Формат   Settable?   Описание
-  ---------------- ------------ ------------------- ----------- -------------------------------
-  bg/on            boolean      true / false        да          Включена фоновая подсветка
-  bg/bright        integer      1--100              да          Яркость фона (%)
-  bg/ct            integer      1700--6500          да          Цветовая температура фона (К)
-  bg/rgb           integer      0--16777215         да          Цвет фона (decimal RGB)
-  bg/hue           integer      0--359              да          Оттенок фона
-  bg/sat           integer      0--100              да          Насыщенность фона
-  bg/color_mode    string       RGB,CT,HSV,Flow     да          Режим цвета фона
-  bg/flowing       boolean      true / false        да\*        Включён flow-режим фона
-  bg/flow_params   string       ---                 да\*        Параметры flow фона
 
+| Топик | Тип данных | Диапазон / Формат | Settable? | Описание |
+| :--- | :--- | :--- | :---: | :--- |
+| `bg/on` | boolean | true / false | да | Включена фоновая подсветка |
+| `bg/bright` | integer | 1–100 | да | Яркость фона (%) |
+| `bg/ct` | integer | 1700–6500 | да | Цветовая температура фона (К) |
+| `bg/rgb` | integer | 0–16777215 | да | Цвет фона (decimal RGB) |
+| `bg/hue` | integer | 0–359 | да | Оттенок фона |
+| `bg/sat` | integer | 0–100 | да | Насыщенность фона |
+| `bg/color_mode` | string | RGB, CT, HSV, Flow | да | Режим цвета фона |
+| `bg/flowing` | boolean | true / false | да* | Включён flow-режим фона |
+| `bg/flow_params` | string | --- | да* | Параметры текущего flow фона |
   **Примеры комманд через mosquitto cli:**
 
 *Включить основную лампу*
