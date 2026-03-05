@@ -790,7 +790,7 @@ func (as *AppState) mqttInit() error {
 }
 
 func main() {
-	Version = "v0.2.1"
+	Version = "0.2.1"
 
 	args, err := args.ProcessArgs()
 	if err != nil {

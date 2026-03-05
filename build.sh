@@ -9,6 +9,7 @@ PKG_SECTION="misc"
 PKG_PRIORITY="standard"
 BUILD_DIR="build"
 PKG_DIR="${BUILD_DIR}/${PKG_NAME}"
+PKG_ARCH="arm_cortex-a7_neon-vfpv4"
 
 # Очистка и создание структуры
 rm -rf ${BUILD_DIR}
@@ -62,7 +63,7 @@ go build -ldflags="-s -w" -trimpath
 ./yeelight2mqtt -create-config ${PKG_DIR}/data/etc/${PKG_NAME}/config.yaml
 
 cat <<EOF > ${PKG_DIR}/data/etc/init.d/${PKG_NAME}
-!/bin/sh /etc/rc.common
+#!/bin/sh /etc/rc.common
 
 # Запуск после сетевых служб
 START=88
@@ -74,7 +75,7 @@ PROG=/usr/bin/${PKG_NAME}
 start_service() {
     procd_open_instance
     # Указываем путь к бинарнику
-    procd_set_param command "\$PROG"
+    procd_set_param command \$PROG
     # Respawn: порог 3600с, таймаут 5с, максимум 5 попыток
     procd_set_param respawn \${respawn_threshold:-3600} \${respawn_timeout:-5} \${respawn_retry:-5}
     procd_set_param stdout 1
@@ -84,19 +85,21 @@ start_service() {
 
 reload_service() {
     # Перезагружаем именно инстанс сервиса
-    procd_send_signal "\$PROG"
+    procd_send_signal \$PROG
 }
 EOF
 # Создание исполняемого файла с tinygo и upx архитектура arm_cortex-a7
-PKG_ARCH="arm_cortex-a7_neon-vfpv4"
 env GOOS=linux GOARCH=arm GOARM=7 tinygo build -no-debug -o ${PKG_DIR}/data/usr/bin/${PKG_NAME}
 upx --best --lzma ${PKG_DIR}/data/usr/bin/${PKG_NAME}
 chmod +x ${PKG_DIR}/data/usr/bin/${PKG_NAME}
 
 # Сборка пакета
-tar -czvf ${BUILD_DIR}/control.tar.gz  ${PKG_DIR}/control
-tar -czvf ${BUILD_DIR}/data.tar.gz  ${PKG_DIR}/data
-
-ar rv  ${BUILD_DIR}/${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.ipk ${BUILD_DIR}/debian-binary ${BUILD_DIR}/control.tar.gz ${BUILD_DIR}/data.tar.gz
+tar -czvf ${BUILD_DIR}/control.tar.gz  -C ${PKG_DIR}/control .
+tar -czvf ${BUILD_DIR}/data.tar.gz  -C ${PKG_DIR}/data .
+rm -r ${PKG_DIR}
+cd ${BUILD_DIR}
+tar -czf ${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.ipk ./*
+cd ..
+#ar rv  ${BUILD_DIR}/${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.ipk ${BUILD_DIR}/debian-binary ${BUILD_DIR}/control.tar.gz ${BUILD_DIR}/data.tar.gz
 
 echo "Пакет ${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.ipk создан в папке ${BUILD_DIR}"
