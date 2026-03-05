@@ -1,7 +1,7 @@
 
-Сервис для проброса устройств  yeelight в mqtt
+### Сервис для проброса устройств  yeelight в mqtt
 
-**Сборка:**
+## Сборка:
 
 Для ARM устройств обычным компилятором GO:
 ```sh
@@ -22,9 +22,9 @@
 2./yeelight2mqtt /etc/yeelight2mqtt/config.yaml - запускаем с нужным конфигурационном файлом.
 ```
 
-**Управление через mqtt:**
+## Управление через mqtt:
 
-### Основное управление
+**Основное управление**
 
 | Топик | Тип данных | Диапазон / Формат | Settable? | Описание |
 | :--- | :--- | :--- | :---: | :--- |
@@ -43,7 +43,7 @@
 | `main/nl_br` | integer | 1–100 | да* | Яркость ночного режима (moonlight) |
 | `main/moonlight_on` | boolean | true / false | да | Включён ли moonlight режим |
 
-### Фоновая подсветка (Background Control)
+**Фоновая подсветка (Background Control)**
 
 
 | Топик | Тип данных | Диапазон / Формат | Settable? | Описание |
@@ -57,34 +57,34 @@
 | `bg/color_mode` | string | RGB, CT, HSV, Flow | да | Режим цвета фона |
 | `bg/flowing` | boolean | true / false | да* | Включён flow-режим фона |
 | `bg/flow_params` | string | --- | да* | Параметры текущего flow фона |
-  **Примеры комманд через mosquitto cli:**
 
-*Включить основную лампу*
+**Примеры комманд через mosquitto cli:**
+	*Включить основную лампу*
 ```sh
 mosquitto_pub -t "y2m/bedroom-ceiling/main/on/set" -m "true"
 ```
-*Выключить фоновую подсветку*
+	*Выключить фоновую подсветку*
 ```sh
 mosquitto_pub -t "y2m/bedroom-ceiling/bg/on/set" -m "false"
 ```
-*Установить яркость 80%*
+	*Установить яркость 80%*
 ```sh
 mosquitto_pub -t "y2m/bedroom-ceiling/main/bright/set" -m "80"
 ```
-*Установить цветовую температуру 4000K*
+	*Установить цветовую температуру 4000K*
 ```sh
 mosquitto_pub -t "y2m/bedroom-ceiling/main/ct/set" -m "4000"
 ```
-*Установить красный цвет (RGB = 16711680 = #FF0000)*
+	*Установить красный цвет (RGB = 16711680 = #FF0000)*
 ```sh
 mosquitto_pub -t "y2m/bedroom-ceiling/main/rgb/set" -m "16711680"
 ```
-*Переключить в режим HSV и задать hue 120 (зелёный)*
+	*Переключить в режим HSV и задать hue 120 (зелёный)*
 ```sh
 mosquitto_pub -t "y2m/bedroom-ceiling/main/color_mode/set" -m "HSV"
 mosquitto_pub -t "y2m/bedroom-ceiling/main/hue/set"      -m "120"
 ```
-*Включить moonlight-режим*
+	*Включить moonlight-режим*
 ```sh
 mosquitto_pub -t "y2m/bedroom-ceiling/main/moonlight_on/set" -m "true"
 ```
