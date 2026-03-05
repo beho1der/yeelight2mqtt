@@ -26,22 +26,22 @@
 
 *Основное управление*
 
-  Топик               Тип данных   Диапазон / Формат   Settable?   Описание
-  ------------------- ------------ ------------------- ----------- ------------------------------------
-  main/on             boolean      true / false        да          Включена / выключена
-  main/bright         integer      1--100              да          Яркость (%)
-  main/ct             integer      1700--6500          да          Цветовая температура (К)
-  main/rgb            integer      0--16777215         да          Цвет в формате RGB (decimal)
-  main/hue            integer      0--359              да          Оттенок (HSV)
-  main/sat            integer      0--100              да          Насыщенность (HSV)
-  main/color_mode     string       RGB,CT,HSV,Flow     да          Текущий режим цвета
-  main/flowing        boolean      true / false        да\*        Включён ли режим течения (flow)
-  main/delayoff       integer      0--60               да\*        Таймер выключения (минуты)
-  main/flow_params    string       ---                 да\*        Параметры текущего flow (строка)
-  main/music_on       boolean      true / false        нет         Включён ли music mode
-  main/name           string       ---                 нет         Имя лампы (из Yeelight)
-  main/nl_br          integer      1--100              да\*        Яркость ночного режима (moonlight)
-  main/moonlight_on   boolean      true / false        да          Включён ли moonlight режим
+| Топик | Тип данных | Диапазон / Формат | Settable? | Описание |
+| :--- | :--- | :--- | :---: | :--- |
+| `main/on` | boolean | true / false | да | Включена / выключена |
+| `main/bright` | integer | 1–100 | да | Яркость (%) |
+| `main/ct` | integer | 1700–6500 | да | Цветовая температура (К) |
+| `main/rgb` | integer | 0–16777215 | да | Цвет в формате RGB (decimal) |
+| `main/hue` | integer | 0–359 | да | Оттенок (HSV) |
+| `main/sat` | integer | 0–100 | да | Насыщенность (HSV) |
+| `main/color_mode` | string | RGB, CT, HSV, Flow | да | Текущий режим цвета |
+| `main/flowing` | boolean | true / false | да* | Включён ли режим течения (flow) |
+| `main/delayoff` | integer | 0–60 | да* | Таймер выключения (минуты) |
+| `main/flow_params` | string | --- | да* | Параметры текущего flow (строка) |
+| `main/music_on` | boolean | true / false | нет | Включён ли music mode |
+| `main/name` | string | --- | нет | Имя лампы (из Yeelight) |
+| `main/nl_br` | integer | 1–100 | да* | Яркость ночного режима (moonlight) |
+| `main/moonlight_on` | boolean | true / false | да | Включён ли moonlight режим |
 
 *Фоновая подсветка*
 
@@ -59,32 +59,32 @@
 
   **Примеры комманд через mosquitto cli:**
 
-# Включить основную лампу
+*Включить основную лампу*
 ```sh
 mosquitto_pub -t "y2m/bedroom-ceiling/main/on/set" -m "true"
 ```
-# Выключить фоновую подсветку
+*Выключить фоновую подсветку*
 ```sh
 mosquitto_pub -t "y2m/bedroom-ceiling/bg/on/set" -m "false"
 ```
-# Установить яркость 80%
+*Установить яркость 80%*
 ```sh
 mosquitto_pub -t "y2m/bedroom-ceiling/main/bright/set" -m "80"
 ```
-# Установить цветовую температуру 4000K
+*Установить цветовую температуру 4000K*
 ```sh
 mosquitto_pub -t "y2m/bedroom-ceiling/main/ct/set" -m "4000"
 ```
-# Установить красный цвет (RGB = 16711680 = #FF0000)
+*Установить красный цвет (RGB = 16711680 = #FF0000)*
 ```sh
 mosquitto_pub -t "y2m/bedroom-ceiling/main/rgb/set" -m "16711680"
 ```
-# Переключить в режим HSV и задать hue 120 (зелёный)
+*Переключить в режим HSV и задать hue 120 (зелёный)*
 ```sh
 mosquitto_pub -t "y2m/bedroom-ceiling/main/color_mode/set" -m "HSV"
 mosquitto_pub -t "y2m/bedroom-ceiling/main/hue/set"      -m "120"
 ```
-# Включить moonlight-режим
+*Включить moonlight-режим*
 ```sh
 mosquitto_pub -t "y2m/bedroom-ceiling/main/moonlight_on/set" -m "true"
 ```
