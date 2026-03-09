@@ -45,6 +45,8 @@ cat <<EOF > ${PKG_DIR}/control/postinst
 exit 0
 EOF
 
+chmod +x ${PKG_DIR}/control/postinst 
+
 cat <<EOF > ${PKG_DIR}/control/prerm
 #!/bin/sh
 
@@ -53,6 +55,8 @@ cat <<EOF > ${PKG_DIR}/control/prerm
 
 exit 0
 EOF
+
+chmod +x ${PKG_DIR}/control/prerm 
 
 cat <<EOF > ${PKG_DIR}/control/conffiles
 /etc/${PKG_NAME}/config.yaml
