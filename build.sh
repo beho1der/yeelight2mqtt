@@ -92,6 +92,9 @@ reload_service() {
     procd_send_signal \$PROG
 }
 EOF
+
+chmod +x ${PKG_DIR}/data/etc/init.d/${PKG_NAME}
+
 # Создание исполняемого файла с tinygo и upx архитектура arm_cortex-a7
 env GOOS=linux GOARCH=arm GOARM=7 tinygo build -no-debug -o ${PKG_DIR}/data/usr/bin/${PKG_NAME}
 upx --best --lzma ${PKG_DIR}/data/usr/bin/${PKG_NAME}
