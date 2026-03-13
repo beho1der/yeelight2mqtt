@@ -122,6 +122,7 @@ for target in "${TARGETS[@]}"; do
         chmod +x ${PKG_DIR}/data/usr/bin/${PKG_NAME}
     else
         echo "Error: Build failed for $PKG_ARCH"
+        continue
     fi
 
     # Заменяем архитектуру
@@ -136,8 +137,8 @@ for target in "${TARGETS[@]}"; do
     # Копируем готовый пакет
     cp ${BUILD_DIR}/${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.ipk /$OPKG_DIR/${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.ipk
     # Удаляем архивы
-    rm ${BUILD_DIR}/control.tar.gz && rm ${BUILD_DIR}/data.tar.gz
+    rm ${BUILD_DIR}/control.tar.gz && rm ${BUILD_DIR}/data.tar.gz && rm ${BUILD_DIR}/${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.ipk
     echo "Пакет ${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.ipk создан в папке ${BUILD_DIR}"
 done
 
-  rm -r ${PKG_DIR}
+rm -r ${PKG_DIR}
