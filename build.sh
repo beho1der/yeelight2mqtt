@@ -9,10 +9,25 @@ PKG_SECTION="misc"
 PKG_PRIORITY="standard"
 BUILD_DIR="build"
 PKG_DIR="${BUILD_DIR}/${PKG_NAME}"
-PKG_ARCH="arm_cortex-a7_neon-vfpv4"
+OPKG_DIR="opkg"
+
+TARGETS=(
+    "arm:7:arm_cortex-a7_neon-vfpv4"      # Cortex-A7, Raspberry Pi 2/3
+    "arm64::aarch64_generic"              # Generic AArch64 (Cortex-A53/72/etc)
+    "mips:softfloat:0:mips_24kc"          # mips
+    "mipsle:softfloat:0:mipsel_24kc"      # mipsle
+)
 
 # Очистка и создание структуры
 rm -rf ${BUILD_DIR}
+
+if [ ! -d "$OPKG_DIR" ]; then
+  mkdir "$OPKG_DIR"
+  echo "Папка создана $OPKG_DIR"
+else
+  echo "Папка уже $OPKG_DIR существует"
+fi
+
 mkdir -p ${PKG_DIR}/control
 mkdir -p ${PKG_DIR}/data
 mkdir -p ${PKG_DIR}/data/etc
@@ -29,7 +44,7 @@ EOF
 cat <<EOF > ${PKG_DIR}/control/control
 Package: ${PKG_NAME}
 Version: ${PKG_VERSION}
-Architecture: ${PKG_ARCH}
+Architecture:
 Maintainer: ${PKG_MAINTAINER}
 Description: ${PKG_DESC}
 Section: ${PKG_SECTION}
@@ -95,18 +110,34 @@ EOF
 
 chmod +x ${PKG_DIR}/data/etc/init.d/${PKG_NAME}
 
-# Создание исполняемого файла с tinygo и upx архитектура arm_cortex-a7
-env GOOS=linux GOARCH=arm GOARM=7 tinygo build -no-debug -o ${PKG_DIR}/data/usr/bin/${PKG_NAME}
-upx --best --lzma ${PKG_DIR}/data/usr/bin/${PKG_NAME}
-chmod +x ${PKG_DIR}/data/usr/bin/${PKG_NAME}
+for target in "${TARGETS[@]}"; do
+    # Разделяем строку на переменные
+    IFS=":" read -r ARCH ARM SOFTFLOAT CGO PKG_ARCH <<< "$target"
+    echo "--- Building for $ARCH $PKG_ARCH ---"
+    # Создание исполняемого файла с tinygo и upx архитектура arm_cortex-a7
+    env env GOOS=linux GOARCH=$ARCH GOARM=$ARM GOMIPS=$SOFTFLOAT CGO_ENABLED=$CGO tinygo build -no-debug -o ${PKG_DIR}/data/usr/bin/${PKG_NAME}
+    # Проверка, создался ли файл перед сжатием
+    if [ -f "${PKG_DIR}/data/usr/bin/${PKG_NAME}" ]; then
+        upx --best --lzma ${PKG_DIR}/data/usr/bin/${PKG_NAME}
+        chmod +x ${PKG_DIR}/data/usr/bin/${PKG_NAME}
+    else
+        echo "Error: Build failed for $PKG_ARCH"
+    fi
 
-# Сборка пакета
-tar -czvf ${BUILD_DIR}/control.tar.gz  -C ${PKG_DIR}/control .
-tar -czvf ${BUILD_DIR}/data.tar.gz  -C ${PKG_DIR}/data .
-rm -r ${PKG_DIR}
-cd ${BUILD_DIR}
-tar -czf ${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.ipk ./*
-cd ..
-#ar rv  ${BUILD_DIR}/${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.ipk ${BUILD_DIR}/debian-binary ${BUILD_DIR}/control.tar.gz ${BUILD_DIR}/data.tar.gz
+    # Заменяем архитектуру
+    sed -i "s/Architecture:/Architecture: $PKG_ARCH/g" ${PKG_DIR}/control/control
+    # Сборка пакета
+    tar -czvf ${BUILD_DIR}/control.tar.gz  -C ${PKG_DIR}/control .
+    tar -czvf ${BUILD_DIR}/data.tar.gz  -C ${PKG_DIR}/data .
+  
+    cd ${BUILD_DIR}
+    tar -czf ${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.ipk ./*
+    cd ..
+    # Копируем готовый пакет
+    cp ${BUILD_DIR}/${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.ipk /$OPKG_DIR/${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.ipk
+    # Удаляем архивы
+    rm ${BUILD_DIR}/control.tar.gz && rm ${BUILD_DIR}/data.tar.gz
+    echo "Пакет ${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.ipk создан в папке ${BUILD_DIR}"
+done
 
-echo "Пакет ${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.ipk создан в папке ${BUILD_DIR}"
+  rm -r ${PKG_DIR}
