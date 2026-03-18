@@ -141,5 +141,5 @@ for target in "${TARGETS[@]}"; do
     echo "Пакет ${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.ipk создан в папке ${OPKG_DIR}"
 done
 
-echo "Удаляем папку сборки ${BUILD_DIR}"
+echo "---  Удаляем папку сборки ---${BUILD_DIR}"
 rm -r ${BUILD_DIR}
