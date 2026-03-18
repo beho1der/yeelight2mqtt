@@ -12,10 +12,10 @@ PKG_DIR="${BUILD_DIR}/${PKG_NAME}"
 OPKG_DIR="opkg"
 
 TARGETS=(
-    "arm:7:arm_cortex-a7_neon-vfpv4"      # Cortex-A7, Raspberry Pi 2/3
-    "arm64::aarch64_generic"              # Generic AArch64 (Cortex-A53/72/etc)
-    "mips:softfloat:0:mips_24kc"          # mips
-    "mipsle:softfloat:0:mipsel_24kc"      # mipsle
+    "arm:7:::arm_cortex-a7_neon-vfpv4"      # Cortex-A7, Raspberry Pi 2/3
+    "arm64::::aarch64_generic"              # Generic AArch64 (Cortex-A53/72/etc)
+    "mips::GOMIPS=softfloat:0:mips_24kc"          # mips
+    "mipsle::GOMIPS=softfloat:0:mipsel_24kc"      # mipsle
 )
 
 # Очистка и создание структуры
@@ -115,7 +115,7 @@ for target in "${TARGETS[@]}"; do
     IFS=":" read -r ARCH ARM SOFTFLOAT CGO PKG_ARCH <<< "$target"
     echo "--- Building for $ARCH $PKG_ARCH ---"
     # Создание исполняемого файла с tinygo и upx архитектура arm_cortex-a7
-    env env GOOS=linux GOARCH=$ARCH GOARM=$ARM GOMIPS=$SOFTFLOAT CGO_ENABLED=$CGO tinygo build -no-debug -o ${PKG_DIR}/data/usr/bin/${PKG_NAME}
+    env env GOOS=linux GOARCH=$ARCH GOARM=$ARM $SOFTFLOAT CGO_ENABLED=$CGO tinygo build -no-debug -o ${PKG_DIR}/data/usr/bin/${PKG_NAME}
     # Проверка, создался ли файл перед сжатием
     if [ -f "${PKG_DIR}/data/usr/bin/${PKG_NAME}" ]; then
         upx --best --lzma ${PKG_DIR}/data/usr/bin/${PKG_NAME}
@@ -132,13 +132,14 @@ for target in "${TARGETS[@]}"; do
     tar -czvf ${BUILD_DIR}/data.tar.gz  -C ${PKG_DIR}/data .
   
     cd ${BUILD_DIR}
-    tar -czf ${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.ipk ./*
+    tar -czf ${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.ipk control.tar.gz data.tar.gz
     cd ..
     # Копируем готовый пакет
-    cp ${BUILD_DIR}/${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.ipk /$OPKG_DIR/${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.ipk
+    cp ${BUILD_DIR}/${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.ipk $OPKG_DIR/${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.ipk
     # Удаляем архивы
     rm ${BUILD_DIR}/control.tar.gz && rm ${BUILD_DIR}/data.tar.gz && rm ${BUILD_DIR}/${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.ipk
-    echo "Пакет ${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.ipk создан в папке ${BUILD_DIR}"
+    echo "Пакет ${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.ipk создан в папке ${OPKG_DIR}"
 done
 
-rm -r ${PKG_DIR}
+echo "Удаляем папку сборки ${BUILD_DIR}"
+rm -r ${BUILD_DIR}
