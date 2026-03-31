@@ -115,7 +115,7 @@ for target in "${TARGETS[@]}"; do
     IFS=":" read -r ARCH ARM SOFTFLOAT CGO PKG_ARCH <<< "$target"
     echo "--- Building for $ARCH $PKG_ARCH ---"
     # Создание исполняемого файла с tinygo и upx архитектура arm_cortex-a7
-    env env GOOS=linux GOARCH=$ARCH GOARM=$ARM $SOFTFLOAT CGO_ENABLED=$CGO tinygo build -target=linux -no-debug -o ${PKG_DIR}/data/usr/bin/${PKG_NAME}
+    env env GOOS=linux GOARCH=$ARCH GOARM=$ARM $SOFTFLOAT CGO_ENABLED=$CGO tinygo build -no-debug -o ${PKG_DIR}/data/usr/bin/${PKG_NAME}
     # Проверка, создался ли файл перед сжатием
     if [ -f "${PKG_DIR}/data/usr/bin/${PKG_NAME}" ]; then
         upx --best --lzma ${PKG_DIR}/data/usr/bin/${PKG_NAME}
