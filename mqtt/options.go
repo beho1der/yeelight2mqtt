@@ -23,6 +23,8 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	_ "tinygo.org/x/drivers/netdev"
 )
 
 // CredentialsProvider allows the username and password to be updated
