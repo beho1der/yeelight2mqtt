@@ -24,7 +24,6 @@ import (
 	"time"
 
 	"github.com/eclipse/paho.mqtt.golang/packets"
-	_ "tinygo.org/x/drivers/netdev"
 )
 
 const closedNetConnErrorText = "use of closed network connection" // error string for closed conn (https://golang.org/src/net/error_test.go)

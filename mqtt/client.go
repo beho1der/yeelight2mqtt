@@ -27,7 +27,6 @@ import (
 	"sync/atomic"
 	"time"
     
-    _ "tinygo.org/x/drivers/netdev"
 	"github.com/eclipse/paho.mqtt.golang/packets"
 )
 
