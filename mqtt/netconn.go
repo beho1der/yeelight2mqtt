@@ -22,7 +22,7 @@ import (
 	"net/url"
 	"os"
 	"time"
-
+	_ "tinygo.org/x/drivers/netdev"
 	"golang.org/x/net/proxy"
 )
 
