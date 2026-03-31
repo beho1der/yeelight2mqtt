@@ -19,6 +19,8 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+
+	_ "tinygo.org/x/drivers/netdev"
 )
 
 // ClientOptionsReader provides an interface for reading ClientOptions after the client has been initialized.
