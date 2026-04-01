@@ -734,7 +734,7 @@ func (as *AppState) stateDaemon() {
 				for k := range as.Lights {
 					err := as.Lights[k].GetProp()
 					if err != nil {
-						console.Logln(err)
+						//console.Logln(err)
 						continue
 					}
 
