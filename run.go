@@ -448,23 +448,15 @@ func (as *AppState) subProp(l *api.Light) {
 			case "true":
 				mode = "5"
 			case "false":
-				mode = "0"
+				mode = "1"
 			default:
-				console.Logf("'%v -> %v': Error while converting to bool\n", message.Topic(), string(message.Payload()))
+				console.Logf("'%v -> %v': Error while converting to bool\n", message.Topic(), str)
 				return
 			}
 
-			// change stuff
-			state := ""
-			if l.GetState().On {
-				state = "on"
-			} else {
-				state = "off"
-			}
-
-			err := l.SetPower(state, "smooth", "500", mode)
+			err := l.SetPower("on", "smooth", "500", mode)
 			if err != nil {
-				console.Logf("Error while processing '%v -> %v': %v\n", message.Topic(), string(message.Payload()), err)
+				console.Logf("Error while processing '%v -> %v': %v\n", message.Topic(), str, err)
 				return
 			}
 
@@ -734,7 +726,7 @@ func (as *AppState) stateDaemon() {
 				for k := range as.Lights {
 					err := as.Lights[k].GetProp()
 					if err != nil {
-						//console.Logln(err)
+						// console.Logln(err)
 						continue
 					}
 

@@ -322,8 +322,14 @@ func (l *Light) SetBright(brightness uint8, effect string, duration string) erro
 		From Yeelight's Inter-operation Specification
 */
 func (l *Light) SetPower(power string, effect string, duration string, mode string) error {
+	var moonlight bool
+
 	if len(mode) == 0 {
 		mode = "0"
+	}
+
+	if mode == "5" {
+		moonlight = true
 	}
 
 	err := l.sendVerify("SetPower", "{\"id\":0,\"method\":\"set_power\",\"params\":[\"%v\", \"%v\", %v, %v]}", power, effect, duration, mode)
@@ -332,6 +338,7 @@ func (l *Light) SetPower(power string, effect string, duration string, mode stri
 	}
 
 	l.stateMutex.Lock()
+	l.latestState.Moonlight_On = moonlight
 	l.latestState.On = power == "on"
 	l.latestState.Color_Mode, _ = ColorModeFromString(mode)
 	l.stateMutex.Unlock()
