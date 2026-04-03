@@ -42,6 +42,7 @@
 | `main/name` | string | --- | нет | Имя лампы (из Yeelight) |
 | `main/nl_br` | integer | 1–100 | да* | Яркость ночного режима (moonlight) |
 | `main/moonlight_on` | boolean | true / false | да | Включён ли moonlight режим |
+| `main/moonlight_on` | --- |--- | да | Запомнить текущие настройки по умолчанию |
 
 **Фоновая подсветка (Background Control)**
 

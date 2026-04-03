@@ -358,7 +358,11 @@ func (l *Light) Toggle() error {
 }
 
 func (l *Light) SetDefault() error {
-	panic("not implemented")
+	err := l.sendVerify("SetDefault", "{\"id\":0,\"method\":\"set_default\",\"params\":[]}")
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 /*

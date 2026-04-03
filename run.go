@@ -464,6 +464,14 @@ func (as *AppState) subProp(l *api.Light) {
 			as.publishSingleProp(l, "main/moonlight_on", fmt.Sprintf("%v", l.GetState().Moonlight_On))
 		},
 
+		"main/default/set": func(client mqtt.Client, message mqtt.Message) {
+			err := l.SetDefault()
+			if err != nil {
+				console.Logf("Error while processing '%v -> %v': %v\n", message.Topic(), err)
+				return
+			}
+		},
+
 		"bg/on/set": func(client mqtt.Client, message mqtt.Message) {
 			// yeelight2mqtt internally uses bool as a bool (makes sense)
 			// but yeelights use string with 'on' or 'off' as a bool
